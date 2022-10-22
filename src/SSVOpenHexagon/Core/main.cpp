@@ -345,6 +345,7 @@ getFirstCompressedReplayFilenameFromArgs(const std::vector<std::string>& args)
     //
     // ------------------------------------------------------------------------
     // Initialize IMGUI
+#ifndef SSVOH_ANDROID // Don't initialize ImGui on Android (it crashes)
     if(!headless)
     {
         SSVOH_ASSERT(window.has_value());
@@ -364,6 +365,7 @@ getFirstCompressedReplayFilenameFromArgs(const std::vector<std::string>& args)
 
         ssvu::lo("::main") << "Done shutting down ImGui...\n";
     });
+#endif
 
     //
     //
@@ -594,11 +596,13 @@ getFirstCompressedReplayFilenameFromArgs(const std::vector<std::string>& args)
 
 int main(int argc, char* argv[])
 {
+#ifndef SSVOH_ANDROID // Android doesn't give any args
     if(argc < 1)
     {
         std::cerr << "Fatal error: no executable specified" << std::endl;
         return -1;
     }
+#endif
 
     //
     //
@@ -641,7 +645,12 @@ int main(int argc, char* argv[])
     //
     // ------------------------------------------------------------------------
     // Set working directory to current executable location
+#ifndef SSVOH_ANDROID
     std::filesystem::current_path(std::filesystem::path{argv[0]}.parent_path());
+#else
+    // workaround to have accessible asset and pack directory, TODO: don't use sfml example app package
+    std::filesystem::current_path(std::filesystem::path{"/storage/self/primary/Android/data/org.sfmldev.android"});
+#endif
 
     //
     //

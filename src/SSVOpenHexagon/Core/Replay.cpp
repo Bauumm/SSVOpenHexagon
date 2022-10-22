@@ -128,7 +128,7 @@ void replay_data::record_input(const bool left, const bool right,
     serialization_result result;
     const auto write = make_write(result, buffer, buffer_end);
 
-    const std::size_t n_inputs = _inputs.size();
+    const uint64_t n_inputs = _inputs.size();
     SSVOH_TRY(write(n_inputs));
 
     for(const input_bitset& ib : _inputs)
@@ -146,7 +146,7 @@ void replay_data::record_input(const bool left, const bool right,
     deserialization_result result;
     const auto read = make_read(result, buffer, buffer_end);
 
-    std::size_t n_inputs;
+    uint64_t n_inputs;
     SSVOH_TRY(read(n_inputs));
 
     _inputs.resize(n_inputs);

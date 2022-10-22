@@ -147,7 +147,7 @@ endif()
 CPMAddPackage(
     NAME zlib
     GITHUB_REPOSITORY madler/zlib
-    GIT_TAG cacf7f1d4e3d44d871b605da3b647f07d718623f
+    GIT_TAG v1.2.13
 )
 
 # Remove example binaries from CMakeLists
@@ -407,8 +407,11 @@ endif()
 
 set(PUBLIC_INCLUDE_DIRS "public" "public/sqlite" "public/sqlite_orm")
 
-set(SFML_LIBRARIES
-    sfml-system sfml-window sfml-graphics sfml-audio sfml-network)
+if(SSVOH_ANDROID)
+    set(SFML_LIBRARIES sfml-system sfml-window sfml-graphics sfml-audio sfml-network sf    ml-activity)
+else()
+    set(SFML_LIBRARIES sfml-system sfml-window sfml-graphics sfml-audio sfml-network)
+endif()
 
 if(NOT SSVOH_ANDROID)
     if(WIN32)
@@ -470,7 +473,16 @@ ssvoh_find_extlib_for_target(SSVOpenHexagonLib SSVUtils)
 ssvoh_find_extlib_for_target(SSVOpenHexagonLib SSVMenuSystem)
 ssvoh_find_extlib_for_target(SSVOpenHexagonLib SSVStart)
 
-target_link_libraries(SSVOpenHexagon SSVOpenHexagonLib SSVOpenHexagonLibC)
+if(SSVOH_ANDROID)
+    set(SFML_MAIN ${CMAKE_SOURCE_DIR}/buildlx/_deps/sfml-build/lib/libsfml-main-d.a)
+
+    target_link_libraries(SSVOpenHexagon
+        "-Wl,--whole-archive ${SFML_MAIN} -Wl,--no-whole-archive"
+	SSVOpenHexagonLib SSVOpenHexagonLibC
+    )
+else()
+    target_link_libraries(SSVOpenHexagon SSVOpenHexagonLib SSVOpenHexagonLibC)
+endif()
 
 if(SSVOH_BUILD_WIN32_CONSOLE)
     target_link_libraries(SSVOpenHexagon "${CMAKE_SOURCE_DIR}/art/icon256.res" sfml-main)
