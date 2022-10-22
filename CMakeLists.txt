@@ -408,7 +408,7 @@ endif()
 set(PUBLIC_INCLUDE_DIRS "public" "public/sqlite" "public/sqlite_orm")
 
 if(SSVOH_ANDROID)
-    set(SFML_LIBRARIES sfml-system sfml-window sfml-graphics sfml-audio sfml-network sf    ml-activity)
+    set(SFML_LIBRARIES sfml-system sfml-window sfml-graphics sfml-audio sfml-network sfml-activity)
 else()
     set(SFML_LIBRARIES sfml-system sfml-window sfml-graphics sfml-audio sfml-network)
 endif()
