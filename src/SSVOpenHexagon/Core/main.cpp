@@ -649,7 +649,7 @@ int main(int argc, char* argv[])
     std::filesystem::current_path(std::filesystem::path{argv[0]}.parent_path());
 #else
     // workaround to have accessible asset and pack directory, TODO: don't use sfml example app package
-    std::filesystem::current_path(std::filesystem::path{"/storage/self/primary/Android/data/org.sfmldev.android"});
+    std::filesystem::current_path(std::filesystem::path{"/storage/self/primary/Android/data/org.sfmldev.android/files"});
 #endif
 
     //
