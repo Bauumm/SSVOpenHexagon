@@ -479,6 +479,7 @@ if(SSVOH_ANDROID)
     target_link_libraries(SSVOpenHexagon
         "-Wl,--whole-archive ${SFML_MAIN} -Wl,--no-whole-archive"
 	SSVOpenHexagonLib SSVOpenHexagonLibC
+        "-landroid"
     )
 else()
     target_link_libraries(SSVOpenHexagon SSVOpenHexagonLib SSVOpenHexagonLibC)
