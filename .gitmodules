@@ -15,4 +15,5 @@
 	url = https://github.com/LaurentGomila/SFML.git
 [submodule "extlibs/SSVStart"]
 	path = extlibs/SSVStart
-	url = https://github.com/SuperV1234/SSVStart
+	url = https://github.com/Bauumm/SSVStart.git
+	branch = android_test
