@@ -560,7 +560,7 @@ HGAssets::getSelectablePackInfos() const noexcept
 
     // ------------------------------------------------------------------------
     // Load pack datas from Steam workshop.
-    if(steamManager != nullptr)
+    if(false)
     {
         if(steamManager->is_initialized())
         {
