@@ -1271,9 +1271,13 @@ static void initStyleControl(Lua::LuaContext& lua, StyleData& styleData)
         .arg("a")
         .doc("Set the color with index `$0` (only used if `$4` is not 0)");
 
-    addLuaFn(lua, "s_set3DLayerOverrideColor",
+    addLuaFn(lua, "s_set3dLayerOverrideColor",
         [&styleData](int mIndex, int r, int g, int b, int a)
         {
+            if(mIndex < 0)
+            {
+                mIndex = styleData._3dDepth + mIndex;
+            }
             if(mIndex < styleData._3dOverrideColors.size() && mIndex >= 0)
             {
                 styleData._3dOverrideColors[mIndex] = sf::Color(r, g, b, a);
@@ -1281,7 +1285,7 @@ static void initStyleControl(Lua::LuaContext& lua, StyleData& styleData)
             else
             {
                 ssvu::lo("hg::LuaScripting::initStyleControl")
-                    << "`s_set3DLayerOverrideColor` failed, no color found at "
+                    << "`s_set3dLayerOverrideColor` failed, no color found at "
                        "index "
                     << mIndex << "\n";
             }

@@ -230,13 +230,8 @@ void HexagonGame::draw()
             c.a = Utils::componentClamp(newAlpha);
         };
 
-        // keep track of the layer index accross both loops for the 3D color
-        // override to work correctly
-        int currentLayer = -1;
-
         for(int j(0); j < layersAboveMain; ++j)
         {
-            currentLayer++;
             const int i(layersAboveMain - j - 1 + styleData._3dLayerOffset);
             const float offset(styleData._3dSpacing *
                                (float(i + 1.f) * styleData._3dPerspectiveMult) *
@@ -245,12 +240,14 @@ void HexagonGame::draw()
             const sf::Vector2f newPos(offset * cosRot, offset * sinRot);
 
             sf::Color overrideColor;
-            bool mustOverride{styleData._3dOverrideColors[currentLayer].a != 0};
+	    const int layerIndex = styleData._3dDepth - j - 1;
+            bool mustOverride{
+                styleData._3dOverrideColors[layerIndex].a != 0};
 
             if(!Config::getBlackAndWhite())
             {
                 overrideColor = mustOverride
-                                    ? styleData._3dOverrideColors[i]
+                                    ? styleData._3dOverrideColors[layerIndex]
                                     : Utils::getColorDarkened(
                                           styleData.get3DOverrideColor(),
                                           styleData._3dDarkenMult);
@@ -270,8 +267,8 @@ void HexagonGame::draw()
             for(std::size_t k = j * numPivotQuads; k < (j + 1) * numPivotQuads;
                 ++k)
             {
-                pivotQuads3D[k].position += newPos;
-                pivotQuads3D[k].color = overrideColor;
+                pivotQuads3DTop[k].position += newPos;
+                pivotQuads3DTop[k].color = overrideColor;
             }
 
             if(styleData.get3DOverrideColor() == styleData.getMainColor() &&
@@ -287,8 +284,8 @@ void HexagonGame::draw()
             for(std::size_t k = j * numWallQuads; k < (j + 1) * numWallQuads;
                 ++k)
             {
-                wallQuads3D[k].position += newPos;
-                wallQuads3D[k].color = overrideColor;
+                wallQuads3DTop[k].position += newPos;
+                wallQuads3DTop[k].color = overrideColor;
             }
 
             // Apply player color if no 3D override is present.
@@ -305,8 +302,8 @@ void HexagonGame::draw()
             for(std::size_t k = j * numPlayerTris; k < (j + 1) * numPlayerTris;
                 ++k)
             {
-                playerTris3D[k].position += newPos;
-                playerTris3D[k].color = overrideColor;
+                playerTris3DTop[k].position += newPos;
+                playerTris3DTop[k].color = overrideColor;
             }
         }
         // If layers are rendered above the lower layers, they should only be
@@ -316,7 +313,6 @@ void HexagonGame::draw()
             mustRender3DAboveMain ? -1.f : styleData._3dLayerOffset);
         for(int j(0); j < depth; ++j)
         {
-            currentLayer++;
             const float i(depth - j - 1 + lowerLayerOffset);
 
             const float offset(styleData._3dSpacing *
@@ -326,12 +322,14 @@ void HexagonGame::draw()
             const sf::Vector2f newPos(offset * cosRot, offset * sinRot);
 
             sf::Color overrideColor;
-            bool mustOverride{styleData._3dOverrideColors[currentLayer].a != 0};
+	    const int layerIndex = depth - j - 1;
+            bool mustOverride{
+                styleData._3dOverrideColors[layerIndex].a != 0};
 
             if(!Config::getBlackAndWhite())
             {
                 overrideColor = mustOverride
-                                    ? styleData._3dOverrideColors[i]
+                                    ? styleData._3dOverrideColors[layerIndex]
                                     : Utils::getColorDarkened(
                                           styleData.get3DOverrideColor(),
                                           styleData._3dDarkenMult);
