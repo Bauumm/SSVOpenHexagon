@@ -230,8 +230,13 @@ void HexagonGame::draw()
             c.a = Utils::componentClamp(newAlpha);
         };
 
+        // keep track of the layer index accross both loops for the 3D color
+        // override to work correctly
+        int currentLayer = -1;
+
         for(int j(0); j < layersAboveMain; ++j)
         {
+            currentLayer++;
             const int i(layersAboveMain - j - 1 + styleData._3dLayerOffset);
             const float offset(styleData._3dSpacing *
                                (float(i + 1.f) * styleData._3dPerspectiveMult) *
@@ -240,78 +245,7 @@ void HexagonGame::draw()
             const sf::Vector2f newPos(offset * cosRot, offset * sinRot);
 
             sf::Color overrideColor;
-
-            if(!Config::getBlackAndWhite())
-            {
-                overrideColor = Utils::getColorDarkened(
-                    styleData.get3DOverrideColor(), styleData._3dDarkenMult);
-            }
-            else
-            {
-                overrideColor = Utils::getColorDarkened(
-                    sf::Color(255, 255, 255, styleData.getMainColor().a),
-                    styleData._3dDarkenMult);
-            }
-            adjustAlpha(overrideColor, i);
-
-            // Draw pivot layers
-            for(std::size_t k = j * numPivotQuads; k < (j + 1) * numPivotQuads;
-                ++k)
-            {
-                pivotQuads3DTop[k].position += newPos;
-                pivotQuads3DTop[k].color = overrideColor;
-            }
-
-            if(styleData.get3DOverrideColor() == styleData.getMainColor())
-            {
-                overrideColor = Utils::getColorDarkened(
-                    getColorWall(), styleData._3dDarkenMult);
-
-                adjustAlpha(overrideColor, i);
-            }
-
-            // Draw wall layers
-            for(std::size_t k = j * numWallQuads; k < (j + 1) * numWallQuads;
-                ++k)
-            {
-                wallQuads3DTop[k].position += newPos;
-                wallQuads3DTop[k].color = overrideColor;
-            }
-
-            // Apply player color if no 3D override is present.
-            if(styleData.get3DOverrideColor() == styleData.getMainColor())
-            {
-                overrideColor = Utils::getColorDarkened(
-                    getColorPlayer(), styleData._3dDarkenMult);
-
-                adjustAlpha(overrideColor, i);
-            }
-
-            // Draw player layers
-            for(std::size_t k = j * numPlayerTris; k < (j + 1) * numPlayerTris;
-                ++k)
-            {
-                playerTris3DTop[k].position += newPos;
-                playerTris3DTop[k].color = overrideColor;
-            }
-        }
-        // If layers are rendered above the lower layers, they should only be
-        // shifted by -1 instead of the actual offset since the other layers
-        // will be processed in the above loop instead of being shifted here
-        const float lowerLayerOffset(
-            mustRender3DAboveMain ? -1.f : styleData._3dLayerOffset);
-        for(int j(0); j < depth; ++j)
-        {
-            const float i(depth - j - 1 + lowerLayerOffset);
-
-            const float offset(styleData._3dSpacing *
-                               (float(i + 1.f) * styleData._3dPerspectiveMult) *
-                               (effect * 3.6f) * 1.4f);
-
-            const sf::Vector2f newPos(offset * cosRot, offset * sinRot);
-
-            sf::Color overrideColor;
-            bool mustOverride{styleData._3dOverrideColors[i].a != 0};
+            bool mustOverride{styleData._3dOverrideColors[currentLayer].a != 0};
 
             if(!Config::getBlackAndWhite())
             {
@@ -340,7 +274,8 @@ void HexagonGame::draw()
                 pivotQuads3D[k].color = overrideColor;
             }
 
-            if(styleData.get3DOverrideColor() == styleData.getMainColor() && !mustOverride)
+            if(styleData.get3DOverrideColor() == styleData.getMainColor() &&
+                !mustOverride)
             {
                 overrideColor = Utils::getColorDarkened(
                     getColorWall(), styleData._3dDarkenMult);
@@ -357,7 +292,89 @@ void HexagonGame::draw()
             }
 
             // Apply player color if no 3D override is present.
-            if(styleData.get3DOverrideColor() == styleData.getMainColor() && !mustOverride)
+            if(styleData.get3DOverrideColor() == styleData.getMainColor() &&
+                !mustOverride)
+            {
+                overrideColor = Utils::getColorDarkened(
+                    getColorPlayer(), styleData._3dDarkenMult);
+
+                adjustAlpha(overrideColor, i);
+            }
+
+            // Draw player layers
+            for(std::size_t k = j * numPlayerTris; k < (j + 1) * numPlayerTris;
+                ++k)
+            {
+                playerTris3D[k].position += newPos;
+                playerTris3D[k].color = overrideColor;
+            }
+        }
+        // If layers are rendered above the lower layers, they should only be
+        // shifted by -1 instead of the actual offset since the other layers
+        // will be processed in the above loop instead of being shifted here
+        const float lowerLayerOffset(
+            mustRender3DAboveMain ? -1.f : styleData._3dLayerOffset);
+        for(int j(0); j < depth; ++j)
+        {
+            currentLayer++;
+            const float i(depth - j - 1 + lowerLayerOffset);
+
+            const float offset(styleData._3dSpacing *
+                               (float(i + 1.f) * styleData._3dPerspectiveMult) *
+                               (effect * 3.6f) * 1.4f);
+
+            const sf::Vector2f newPos(offset * cosRot, offset * sinRot);
+
+            sf::Color overrideColor;
+            bool mustOverride{styleData._3dOverrideColors[currentLayer].a != 0};
+
+            if(!Config::getBlackAndWhite())
+            {
+                overrideColor = mustOverride
+                                    ? styleData._3dOverrideColors[i]
+                                    : Utils::getColorDarkened(
+                                          styleData.get3DOverrideColor(),
+                                          styleData._3dDarkenMult);
+            }
+            else
+            {
+                overrideColor = Utils::getColorDarkened(
+                    sf::Color(255, 255, 255, styleData.getMainColor().a),
+                    styleData._3dDarkenMult);
+            }
+            if(!mustOverride)
+            {
+                adjustAlpha(overrideColor, i);
+            }
+
+            // Draw pivot layers
+            for(std::size_t k = j * numPivotQuads; k < (j + 1) * numPivotQuads;
+                ++k)
+            {
+                pivotQuads3D[k].position += newPos;
+                pivotQuads3D[k].color = overrideColor;
+            }
+
+            if(styleData.get3DOverrideColor() == styleData.getMainColor() &&
+                !mustOverride)
+            {
+                overrideColor = Utils::getColorDarkened(
+                    getColorWall(), styleData._3dDarkenMult);
+
+                adjustAlpha(overrideColor, i);
+            }
+
+            // Draw wall layers
+            for(std::size_t k = j * numWallQuads; k < (j + 1) * numWallQuads;
+                ++k)
+            {
+                wallQuads3D[k].position += newPos;
+                wallQuads3D[k].color = overrideColor;
+            }
+
+            // Apply player color if no 3D override is present.
+            if(styleData.get3DOverrideColor() == styleData.getMainColor() &&
+                !mustOverride)
             {
                 overrideColor = Utils::getColorDarkened(
                     getColorPlayer(), styleData._3dDarkenMult);
@@ -689,7 +706,8 @@ void HexagonGame::updateText(ssvu::FT mFT)
         fpsText.setCharacterSize(getScaledCharacterSize(20.f));
     }
 
-    messageText.setCharacterSize(getScaledCharacterSize(status.messageTextCharacterSize));
+    messageText.setCharacterSize(
+        getScaledCharacterSize(status.messageTextCharacterSize));
     messageText.setOrigin({ssvs::getGlobalWidth(messageText) / 2.f, 0.f});
 
     const float growth = std::sin(pbTextGrowth);
