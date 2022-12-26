@@ -121,6 +121,9 @@ public:
 
     void update(ssvu::FT mFT, float mMult = 1.f);
 
+    void refresh3dDepth();
+
+    bool mustComputeColors;
     void computeColors();
 
     void drawBackgroundMenu(Utils::FastVertexVectorTris& mTris,

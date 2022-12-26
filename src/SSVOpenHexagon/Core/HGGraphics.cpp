@@ -77,6 +77,12 @@ void HexagonGame::draw()
         return sf::RenderStates{assets.getShaderByShaderId(*fragmentShaderId)};
     };
 
+    if(styleData.mustComputeColors)
+    {
+        styleData.computeColors();
+        styleData.mustComputeColors = false;
+    }
+
     SSVOH_ASSERT(backgroundCamera.has_value());
     SSVOH_ASSERT(overlayCamera.has_value());
 
@@ -240,9 +246,8 @@ void HexagonGame::draw()
             const sf::Vector2f newPos(offset * cosRot, offset * sinRot);
 
             sf::Color overrideColor;
-	    const int layerIndex = styleData._3dDepth - j - 1;
-            bool mustOverride{
-                styleData._3dOverrideColors[layerIndex].a != 0};
+            const int layerIndex = styleData._3dDepth - j - 1;
+            bool mustOverride{styleData._3dOverrideColors[layerIndex].a != 0};
 
             if(!Config::getBlackAndWhite())
             {
@@ -322,9 +327,8 @@ void HexagonGame::draw()
             const sf::Vector2f newPos(offset * cosRot, offset * sinRot);
 
             sf::Color overrideColor;
-	    const int layerIndex = depth - j - 1;
-            bool mustOverride{
-                styleData._3dOverrideColors[layerIndex].a != 0};
+            const int layerIndex = depth - j - 1;
+            bool mustOverride{styleData._3dOverrideColors[layerIndex].a != 0};
 
             if(!Config::getBlackAndWhite())
             {

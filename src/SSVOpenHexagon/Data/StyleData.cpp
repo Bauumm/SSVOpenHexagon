@@ -183,7 +183,11 @@ void StyleData::update(ssvu::FT mFT, float mMult)
         pulseIncrement *= -1.f;
         pulseFactor = pulseMax;
     }
+    refresh3dDepth();
+}
 
+void StyleData::refresh3dDepth()
+{
     if(_3dDepth != last3dDepth)
     {
         _3dOverrideColors.clear();
@@ -191,7 +195,7 @@ void StyleData::update(ssvu::FT mFT, float mMult)
         {
             _3dOverrideColors.emplace_back(sf::Color::Transparent);
         }
-	last3dDepth = _3dDepth;
+        last3dDepth = _3dDepth;
     }
 }
 

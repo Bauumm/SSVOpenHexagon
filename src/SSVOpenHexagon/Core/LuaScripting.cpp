@@ -1205,7 +1205,10 @@ static void initStyleControl(Lua::LuaContext& lua, StyleData& styleData)
     {
         addLuaFn(lua, name,
             [&styleData, pmd](int r, int g, int b, int a)
-            { (styleData.*pmd) = sf::Color(r, g, b, a); })
+            {
+                (styleData.*pmd) = sf::Color(r, g, b, a);
+                styleData.mustComputeColors = true;
+            })
             .arg("r")
             .arg("g")
             .arg("b")
@@ -1256,6 +1259,7 @@ static void initStyleControl(Lua::LuaContext& lua, StyleData& styleData)
             if(mIndex < styleData._overrideColors.size() && mIndex >= 0)
             {
                 styleData._overrideColors[mIndex] = sf::Color(r, g, b, a);
+                styleData.mustComputeColors = true;
             }
             else
             {
@@ -1278,6 +1282,7 @@ static void initStyleControl(Lua::LuaContext& lua, StyleData& styleData)
             {
                 mIndex = styleData._3dDepth + mIndex;
             }
+            styleData.refresh3dDepth();
             if(mIndex < styleData._3dOverrideColors.size() && mIndex >= 0)
             {
                 styleData._3dOverrideColors[mIndex] = sf::Color(r, g, b, a);
