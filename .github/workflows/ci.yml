@@ -32,7 +32,7 @@ jobs:
       run: |
         cd build
         export LD_RUN_PATH="/opt/gcc-latest/lib64"
-        cmake -GNinja -DCMAKE_BUILD_TYPE=RELEASE -DSSVOH_HEADLESS_TESTS=1 ..
+        cmake -GNinja -DCMAKE_BUILD_TYPE=DEBUG -DSSVOH_HEADLESS_TESTS=1 ..
         
     - name: Build
       run: ninja -C build
